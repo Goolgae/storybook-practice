@@ -50,3 +50,7 @@ package.json의 테스트 스크립트 부분에 이 플래스를 추가하여 �
 ![3가지 양상](https://www.learnstorybook.com/intro-to-storybook/app-three-modalities.png)
 
 앱의 어느 부분을 작업하고 계신가에 따라, 하나 또는 그 이상을 동시에 실행하기를 원하실 수 있습니다. 현재는 단일 UI 컴포넌트를 만드는 데 초점을 두고 있기 때문에, Storybook을 계속 실행하도록 하겠습니다.
+
+## CSS를 재사용하기
+
+Taxkbox는 GraphQL과 React 튜토리얼 연습 예제를 재사용할 것이므로 CSS를 따로 작성할 필요가 없습니다.
