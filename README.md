@@ -163,3 +163,47 @@ Template.bind({})는 함수의 복사본을 만드는 표준 JavaScript의 한 �
 종종, 앱의 컨텍스트에서 함수와 state에 접근하지 못할 수 있습니다.
 이런 경우 action()을 사용하여 끼워 넣어주세요.
 ```
+
+`매개변수(parameters)`는 일반적으로 Storybook의 기능과 애드온의 동작을 제어하기 위하여 사용됩니다. 우리의 경우에는 이를 사용하여 actions(mocked callbacks)이 처리되는 방식을 구성할 것입니다.
+
+actions은 클릭이 되었을때 Storybook UI의 actions 패널에 나타날 콜백을 생성할수 있도록 해줍니다. 따라서 핀 버튼을 만들 때, 버튼 클릭이 성공적이었는지 테스트 UI에서 확인 할 수 있을 것입니다.
+
+이 작업을 끝내신 후, Storybook 서버를 재시작하면 세 가지 task state에 관한 테스트 사례가 생성됩니다.
+
+## State 구현하기
+
+지금까지 Storybook 설정, 스타일 가져오기, 테스트 사례를 구성해보았습니다. 이제 디자인에 맞게 컴포넌트의 HTML을 구현하는 작업을 빠르게 시작 할 수 있습니다. 컴포넌트는 아직 기본만 갖춘 상태입니다. 너무 자세하지 않지만 우선 디자인을 이룰 수 있는 코드를 적어보겠습니다.
+
+```js
+// src/components/Task.js
+
+import React from 'react';
+
+export default function Task({ task: { id, title, state }, onArchiveTask, onPinTask }) {
+  return (
+    <div className={`list-item ${state}`}>
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          defaultChecked={state === 'TASK_ARCHIVED'}
+          disabled={true}
+          name="checked"
+        />
+        <span className="checkbox-custom" onClick={() => onArchiveTask(id)} />
+      </label>
+      <div className="title">
+        <input type="text" value={title} readOnly={true} placeholder="Input title" />
+      </div>
+
+      <div className="actions" onClick={event => event.stopPropagation()}>
+        {state !== 'TASK_ARCHIVED' && (
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+          <a onClick={() => onPinTask(id)}>
+            <span className={`icon-star`} />
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+```
