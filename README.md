@@ -67,3 +67,99 @@ Task는 우리 앱의 핵심 컴포넌트입니다. 각각의 task는 현재 어
 - state - 현재 어떤 task가 목록에 있으며, 선택되어 있는지의 여부
 
 Task 컴포넌트를 만들기 위해, 위에서 살펴본 여러 유형의 task에 해당하는 테스트 state를 작성합니다. 그런 다음 모의 데이터를 사용하여 독립적 환경에서 컴포넌트를 구축하기 위해 Storybook을 사용합니다. 각각의 state에 따라 컴포넌트의 모습을 수동으로 테스트하면서 진행할 것입니다.
+
+## 설정하기
+
+task의 기본 구현 부터 시작하겠습니다. 우리가 필요로 하는 속성들과 여러분이 task에 대해 취할 수 있는 두 가지 액션(목록 간 이동하는 것)을 간단히 살펴보도록 하겠습니다.
+
+```js
+// src/components/Task.js
+
+import React from 'react';
+
+export default function Task({ task: { id, title, state }, onArchiveTask, onPinTask }) {
+  return (
+    <div className="list-item">
+      <input type="text" value={title} readOnly={true} />
+    </div>
+  );
+}
+```
+
+위의 코드는 Todos 앱의 기존 HTML을 기반으로 Task에 대한 간단한 마크업을 렌더링 합니다.
+
+아래의 코드는 Task의 세 가지 테스트 state를 스토리 파일에 작성한 것입니다.
+
+```js
+// src/components/Task.stories.js
+
+import React from 'react';
+
+import Task from './Task';
+
+export default {
+  component: Task,
+  title: 'Task',
+};
+
+const Template = args => <Task {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  task: {
+    id: '1',
+    title: 'Test Task',
+    state: 'TASK_INBOX',
+    updatedAt: new Date(2018, 0, 1, 9, 0),
+  },
+};
+
+export const Pinned = Template.bind({});
+Pinned.args = {
+  task: {
+    ...Default.args.task,
+    state: 'TASK_PINNED',
+  },
+};
+
+export const Archived = Template.bind({});
+Archived.args = {
+  task: {
+    ...Default.args.task,
+    state: 'TASK_ARCHIVED',
+  },
+};
+```
+
+Storybook은 컴포넌트와 그 하위 스토리의 두 가지 기본 단계로 구성되어 있습니다. 각 스토리는 해당 컴포넌트에 대응된다고 생각하시면 됩니다. 여러분은 얼마든지 필요한 만큼의 스토리를 컴포넌트별로 작성하실 수 있습니다.
+
+- 컴포넌트
+    - 스토리
+    - 스토리
+    - 스토리
+
+Storybook에게 우리가 문서화하고 있는 컴포넌트에 대해 알려주기 위해, 아래 사항들을 포함하는 default export를 생성합니다.
+
+- component --해당 컴포넌트,
+- title -- Storybook 앱의 사이드바에서 컴포넌트를 참조하는 방법,
+- excludeStories -- Storybook에서 스토리를 내보낼 때 렌더링에서 제외하는 것
+- argTypes -- 각각의 스토리에서 인수(args)의 행동 방식을 명시합니다.
+
+스토리를 정의하기 위해, 각각의 테스트 state에 해당하는 소토리를 만들기 위해서 우리는 함수를 내보냅니다. 스토리는 주어진 state안에서 렌더링된 요소 (애를 들자면 prop이 포함된 컴포넌트)를 리턴하는 함수입니다. 이는 함수형 컴포넌트와 같습니다.
+
+우리 컴포넌트의 순열(permutations)이 여러 개이기 때문에 Template 변수에 할당하는 것이 편리합니다. 이 패턴을 스토리에 도입함으로써 작성하고 유지해야 하는 코드의 양이 줄어들 것입니다.
+
+```
+Template.bind({})는 함수의 복사본을 만드는 표준 JavaScript의 한 기법입니다.
+우리는 이 기법을 사용하여 각각의 스토리가 고유한 속성(prop)을 갖지만 동시에 구현을 사용하도록 할 수 있습니다.
+```
+
+인수 또는 간단히 줄여서 args를 사용하여 Storybook을 다시 시작하지 않아고 Controls addon으로 컴포넌트를 실시간으로 수정할 수 있습니다. args의 값이 변하면 컴포넌트도 함께 변합니다.
+
+스토리를 만들때 우리는 기본 task 인수를 사용하여 컴포넌트가 예상하는 task의 형태를 구성합니다. 이는 일반적으로 실제 데이터를 모델로 하여 만들어집니다. 다시 말하지만 export하는 것은 차후 스토리에서 이를 재사용 할 수 있도록 해줍니다.
+
+```
+액션은 UI 컴포넌트를 독립적으로 만들 때, 컴포넌트와의 상호작용을 확인하는데 도움이 됩니다.
+종종, 앱의 컨텍스트에서 함수와 state에 접근하지 못할 수 있습니다.
+이런 경우 action()을 사용하여 끼워 넣어주세요.
+```
