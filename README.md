@@ -207,3 +207,41 @@ export default function Task({ task: { id, title, state }, onArchiveTask, onPinT
   );
 }
 ```
+
+## 데이터 요구 사항 명시하기
+
+컴포넌트에 필요한 데이터 형태를 명시하려면 React에서 propTypes를 사용하는 것이 가장 좋습니다. 이는 자체적 문서화일 뿐만 아니라, 문제를 조기에 발견하는 데 도움이 됩니다.
+
+```js
+// src/components/Task.js
+
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default function Task({ task: { id, title, state }, onArchiveTask, onPinTask }) {
+  // ...
+}
+
+Task.propTypes = {
+  /** Composition of the task */
+  task: PropTypes.shape({
+    /** Id of the task */
+    id: PropTypes.string.isRequired,
+    /** Title of the task */
+    title: PropTypes.string.isRequired,
+    /** Current state of the task */
+    state: PropTypes.string.isRequired,
+  }),
+  /** Event to change the task to archived */
+  onArchiveTask: PropTypes.func,
+  /** Event to change the task to pinned */
+  onPinTask: PropTypes.func,
+};
+```
+
+이제 Task 컴포넌트가 잘못 사용된다면 경고가 나타날 것입니다.
+
+```
+동일한 목적을 달성하는 다른 방법으로는 Ts와 같은 타입 시스템의 Js를 사용하여 컴포넌트의 속성에 대한 타입을 만드는 것입니다.
+```
+
